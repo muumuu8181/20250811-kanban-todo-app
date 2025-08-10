@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>カンバンTODO</title>
+    <title>カンバンTODO v0.1</title>
     
     <!-- カスタムスタイル -->
     <link rel="stylesheet" href="src/custom/styles.css">
@@ -237,29 +237,25 @@
     
     <div class="container">
         <!-- ⚠️ パネル1: 認証（削除禁止） -->
-        <div class="section-panel panel-L">
-            <span class="panel-number">[1-L]</span>
-            <div class="app-header">
-                <h1 class="app-title">📋 カンバンTODO</h1>
-                <p class="app-subtitle">タスク管理をスマートに</p>
-            </div>
-            <!-- 認証セクション -->
-            <div class="auth-section" id="authSection">
-                <h3>🔐 ログイン</h3>
-                <p>Googleアカウントでログインしてデータを保存・同期できます</p>
-                <button class="auth-button" onclick="handleGoogleLogin()">Googleでログイン</button>
-            </div>
-            <!-- ユーザー情報表示 (ログイン後に表示) -->
-            <div class="user-info section-panel panel-M hidden" id="userInfo">
-                <span class="panel-number">[1.1-M]</span>
-                <span>👤 ログイン中: <span id="userName"></span></span>
-                <button class="logout-button" onclick="handleLogout()">ログアウト</button>
+        <div class="section-panel panel-L" style="padding: 10px !important;">
+            <span class="panel-number">[1]</span>
+            <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                <h1 style="margin: 0; font-size: 20px;">📋 カンバンTODO v0.1</h1>
+                <!-- 認証セクション -->
+                <div id="authSection" style="display: flex; gap: 10px; align-items: center;">
+                    <button class="auth-button" onclick="handleGoogleLogin()" style="padding: 6px 12px; margin: 0;">Googleログイン</button>
+                </div>
+                <!-- ユーザー情報表示 (ログイン後に表示) -->
+                <div class="hidden" id="userInfo" style="display: flex; gap: 10px; align-items: center;">
+                    <span style="font-size: 14px;">👤 <span id="userName"></span></span>
+                    <button class="logout-button" onclick="handleLogout()" style="padding: 4px 10px; margin: 0; font-size: 12px;">ログアウト</button>
+                </div>
             </div>
         </div>
         
         <!-- パネル2: カンバンボード -->
         <div class="section-panel panel-L hidden" id="userPanel">
-            <span class="panel-number">[2-L]</span>
+            <span class="panel-number">[2]</span>
             
             <!-- 新規タスク追加セクション -->
             <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
@@ -276,7 +272,18 @@
                                 <option value="B">B</option>
                                 <option value="C">C</option>
                             </select>
-                            <input type="number" id="priorityNumber" placeholder="1-10" min="1" max="10" value="5" class="input-field" style="margin: 0; width: 60px; padding: 5px;">
+                            <select id="priorityNumber" class="input-field" style="margin: 0; padding: 5px; width: 60px;">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5" selected>5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10</option>
+                            </select>
                         </div>
                         <button onclick="addTask()" class="save-button" style="margin: 0; padding: 10px 30px;">追加</button>
                     </div>
@@ -287,7 +294,7 @@
             <div style="margin-bottom: 15px; padding: 10px; background: #e9ecef; border-radius: 8px;">
                 <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                     <label style="font-weight: bold;">フィルター:</label>
-                    <button onclick="filterByPriority('all')" class="filter-btn" data-filter="all" style="background: #007bff; color: white; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer;">すべて</button>
+                    <button onclick="filterByPriority('all')" class="filter-btn" data-filter="all" style="background: #007bff; color: white; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer;">ALL</button>
                     <button onclick="filterByPriority('S')" class="filter-btn" data-filter="S" style="background: #dc3545; color: white; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer;">S</button>
                     <button onclick="filterByPriority('A')" class="filter-btn" data-filter="A" style="background: #fd7e14; color: white; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer;">A</button>
                     <button onclick="filterByPriority('B')" class="filter-btn" data-filter="B" style="background: #ffc107; color: #212529; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer;">B</button>
@@ -325,10 +332,10 @@
 
         <!-- ⚠️ パネル3: ログ（削除禁止） -->
         <div class="section-panel panel-L">
-            <span class="panel-number">[3-L]</span>
+            <span class="panel-number">[3]</span>
             <h3>📋 アプリログ <button class="universal-copy-btn" onclick="copyLogs()" style="background: #28a745; color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 12px;">📋 ログをコピー</button></h3>
             <div class="data-area" id="logArea">
-            カンバンTODO 起動完了...<br>
+            カンバンTODO v0.1 起動完了...<br>
             🔥 Firebase設定完了<br>
             🔐 Google認証準備完了<br>
             </div>
@@ -336,7 +343,7 @@
         
         <!-- ⚠️ パネル4: デバッグボタン（削除禁止） -->
         <div class="section-panel panel-L" style="margin-top: 8px; text-align: center;">
-            <span class="panel-number">[4-L]</span>
+            <span class="panel-number">[4]</span>
             <button class="universal-copy-btn" onclick="debugFirebaseConnection()" style="background: #ff6b6b; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; margin: 5px;">🔍 Firebase Debug</button>
             <button onclick="testGridAdjust()" style="background: #17a2b8; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; margin: 5px;">📐 Grid調整テスト</button>
             <button class="universal-copy-btn" onclick="checkLoginIssues()" style="background: #ffc107; color: #212529; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; margin: 5px;">⚠️ ログイン問題診断</button>
@@ -489,7 +496,7 @@
                 }
             });
             
-            log(`🔍 フィルター適用: ${priority === 'all' ? 'すべて' : priority}`);
+            log(`🔍 フィルター適用: ${priority === 'all' ? 'ALL' : priority}`);
         };
 
         // ドラッグ&ドロップのイベントハンドラ
@@ -792,14 +799,16 @@
 
         // UI表示制御
         function showUserInterface(user) {
-            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('authSection').style.display = 'none';
+            document.getElementById('userInfo').style.display = 'flex';
             document.getElementById('userInfo').classList.remove('hidden');
             document.getElementById('userPanel').classList.remove('hidden');
             document.getElementById('userName').textContent = user.displayName;
         }
 
         function showLoginInterface() {
-            document.getElementById('authSection').classList.remove('hidden');
+            document.getElementById('authSection').style.display = 'flex';
+            document.getElementById('userInfo').style.display = 'none';
             document.getElementById('userPanel').classList.add('hidden');
         }
 
@@ -1382,7 +1391,7 @@ ${document.getElementById('logArea').innerText}`;
             log('📐 === テスト終了 ===');
         };
         
-        log('🚀 カンバンTODO 起動完了');
+        log('🚀 カンバンTODO v0.1 起動完了');
         log('🔐 認証システム準備完了');
         
         // プロトコルチェック（自動診断）
