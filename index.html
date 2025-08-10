@@ -114,12 +114,63 @@
             z-index: 1000001;
         }
         
+        /* カンバンボードのレイアウト */
+        .kanban-board-horizontal {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+        
+        .kanban-board-vertical {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 10px 0;
+        }
+        
+        .kanban-board-vertical .kanban-column {
+            width: 100% !important;
+            min-width: unset !important;
+        }
+        
+        /* 優先順位の色分け */
+        .priority-S { border-left: 5px solid #dc3545 !important; }
+        .priority-A { border-left: 5px solid #fd7e14 !important; }
+        .priority-B { border-left: 5px solid #ffc107 !important; }
+        .priority-C { border-left: 5px solid #28a745 !important; }
+        
+        .priority-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            color: white;
+            margin-right: 5px;
+        }
+        
+        .priority-badge-S { background: #dc3545; }
+        .priority-badge-A { background: #fd7e14; }
+        .priority-badge-B { background: #ffc107; color: #212529; }
+        .priority-badge-C { background: #28a745; }
+        
         /* スマホ対応 */
         @media (max-width: 768px) {
             body { padding: 3px; }
             .container { padding: 8px; margin: 0; border-radius: 0; }
             .weight-input { grid-template-columns: 1fr; gap: 8px; }
             .input-card { padding: 8px; }
+            
+            /* モバイルでは自動的に縦配置 */
+            .kanban-board-horizontal {
+                flex-direction: column;
+            }
+            
+            .kanban-board-horizontal .kanban-column {
+                width: 100% !important;
+                min-width: unset !important;
+            }
         }
         .auth-section { background: #e7f3ff; color: #0c5460; padding: 10px; border-radius: 5px; text-align: center; }
         .weight-input { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; margin: 8px 0; }
@@ -213,15 +264,39 @@
             <!-- 新規タスク追加セクション -->
             <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
                 <h3 style="margin-top: 0; margin-bottom: 10px;">➕ 新しいタスク</h3>
-                <div style="display: flex; gap: 10px; align-items: center;">
-                    <input type="text" id="taskTitle" placeholder="タスクタイトル" class="input-field" style="flex: 1; margin: 0;">
-                    <textarea id="taskDescription" placeholder="説明（オプション）" class="input-field" rows="1" style="flex: 1; margin: 0;"></textarea>
-                    <button onclick="addTask()" class="save-button" style="margin: 0; padding: 10px 20px;">追加</button>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <input type="text" id="taskTitle" placeholder="タスクタイトル（例：週次会議の準備）" class="input-field" style="margin: 0; width: 100%;">
+                    <textarea id="taskDescription" placeholder="説明（オプション）" class="input-field" rows="2" style="margin: 0; width: 100%; resize: vertical;"></textarea>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <div style="display: flex; gap: 5px; align-items: center;">
+                            <label style="font-weight: bold;">優先順位:</label>
+                            <select id="priorityLevel" class="input-field" style="margin: 0; padding: 5px; width: 60px;">
+                                <option value="S">S</option>
+                                <option value="A" selected>A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                            </select>
+                            <input type="number" id="priorityNumber" placeholder="1-10" min="1" max="10" value="5" class="input-field" style="margin: 0; width: 60px; padding: 5px;">
+                        </div>
+                        <button onclick="addTask()" class="save-button" style="margin: 0; padding: 10px 30px;">追加</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- フィルターセクション -->
+            <div style="margin-bottom: 15px; padding: 10px; background: #e9ecef; border-radius: 8px;">
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <label style="font-weight: bold;">フィルター:</label>
+                    <button onclick="filterByPriority('all')" class="filter-btn" data-filter="all" style="background: #007bff; color: white; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer;">すべて</button>
+                    <button onclick="filterByPriority('S')" class="filter-btn" data-filter="S" style="background: #dc3545; color: white; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer;">S</button>
+                    <button onclick="filterByPriority('A')" class="filter-btn" data-filter="A" style="background: #fd7e14; color: white; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer;">A</button>
+                    <button onclick="filterByPriority('B')" class="filter-btn" data-filter="B" style="background: #ffc107; color: #212529; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer;">B</button>
+                    <button onclick="filterByPriority('C')" class="filter-btn" data-filter="C" style="background: #28a745; color: white; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer;">C</button>
                 </div>
             </div>
 
             <!-- カンバンボード -->
-            <div id="kanbanBoard" style="display: flex; gap: 15px; overflow-x: auto; padding: 10px 0;">
+            <div id="kanbanBoard" class="kanban-board-horizontal" style="display: flex; gap: 15px; overflow-x: auto; padding: 10px 0;">
                 <!-- Todo列 -->
                 <div class="kanban-column" style="flex: 1; min-width: 300px; background: #f8f9fa; padding: 15px; border-radius: 8px;">
                     <h3 style="margin-top: 0; margin-bottom: 15px; color: #6c757d; text-align: center;">📋 Todo</h3>
@@ -296,6 +371,7 @@
         let currentUser = null;
         let selectedTimingValue = '';
         let draggedElement = null;
+        let currentFilter = 'all';
 
         // タスク追加機能
         window.addTask = async () => {
@@ -306,6 +382,8 @@
 
             const title = document.getElementById('taskTitle').value.trim();
             const description = document.getElementById('taskDescription').value.trim();
+            const priorityLevel = document.getElementById('priorityLevel').value;
+            const priorityNumber = document.getElementById('priorityNumber').value;
 
             if (!title) {
                 log('❌ タスクタイトルを入力してください');
@@ -319,6 +397,9 @@
                     title: title,
                     description: description || '',
                     status: 'todo',
+                    priorityLevel: priorityLevel,
+                    priorityNumber: parseInt(priorityNumber) || 5,
+                    priority: `${priorityLevel}${priorityNumber}`,
                     userEmail: currentUser.email,
                     timestamp: firebase.database.ServerValue.TIMESTAMP,
                     createdAt: new Date().toISOString()
@@ -331,6 +412,8 @@
                 // 入力フィールドをクリア
                 document.getElementById('taskTitle').value = '';
                 document.getElementById('taskDescription').value = '';
+                document.getElementById('priorityLevel').value = 'A';
+                document.getElementById('priorityNumber').value = '5';
                 
                 // データを再読み込み
                 loadUserTasks(currentUser.uid);
@@ -375,6 +458,38 @@
             } catch (error) {
                 log(`❌ 削除エラー: ${error.message}`);
             }
+        };
+
+        // フィルター機能
+        window.filterByPriority = (priority) => {
+            currentFilter = priority;
+            const allCards = document.querySelectorAll('.task-card');
+            
+            // フィルターボタンのスタイル更新
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.dataset.filter === priority) {
+                    btn.style.opacity = '1';
+                    btn.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+                } else {
+                    btn.style.opacity = '0.6';
+                    btn.style.boxShadow = 'none';
+                }
+            });
+            
+            allCards.forEach(card => {
+                if (priority === 'all') {
+                    card.style.display = 'block';
+                } else {
+                    const cardPriority = card.dataset.priorityLevel;
+                    if (cardPriority === priority) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                }
+            });
+            
+            log(`🔍 フィルター適用: ${priority === 'all' ? 'すべて' : priority}`);
         };
 
         // ドラッグ&ドロップのイベントハンドラ
@@ -601,10 +716,23 @@
                     const tasks = Object.entries(data)
                         .map(([key, value]) => ({ id: key, ...value }));
                     
+                    // 優先順位でソート（S1が最高、C10が最低）
+                    tasks.sort((a, b) => {
+                        const priorityOrder = { 'S': 0, 'A': 1, 'B': 2, 'C': 3 };
+                        const aLevel = priorityOrder[a.priorityLevel || 'C'];
+                        const bLevel = priorityOrder[b.priorityLevel || 'C'];
+                        const aNumber = a.priorityNumber || 10;
+                        const bNumber = b.priorityNumber || 10;
+                        
+                        if (aLevel !== bLevel) return aLevel - bLevel;
+                        return aNumber - bNumber;
+                    });
+                    
                     tasks.forEach(task => {
                         const taskCard = document.createElement('div');
-                        taskCard.className = 'task-card';
+                        taskCard.className = `task-card priority-${task.priorityLevel || 'C'}`;
                         taskCard.dataset.taskId = task.id;
+                        taskCard.dataset.priorityLevel = task.priorityLevel || 'C';
                         taskCard.draggable = true;
                         taskCard.style.cssText = `
                             background: white;
@@ -617,9 +745,15 @@
                             transition: all 0.3s;
                         `;
                         
+                        const priorityBadgeClass = `priority-badge priority-badge-${task.priorityLevel || 'C'}`;
+                        const priorityText = `${task.priorityLevel || 'C'}${task.priorityNumber || ''}`;
+                        
                         taskCard.innerHTML = `
                             <div style="display: flex; justify-content: space-between; align-items: start;">
                                 <div style="flex: 1;">
+                                    <div style="margin-bottom: 5px;">
+                                        <span class="${priorityBadgeClass}">${priorityText}</span>
+                                    </div>
                                     <h4 style="margin: 0 0 5px 0; color: #333;">${task.title}</h4>
                                     ${task.description ? `<p style="margin: 0; color: #666; font-size: 14px;">${task.description}</p>` : ''}
                                 </div>
