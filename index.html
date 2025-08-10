@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal App Template v0.35</title>
+    <title>カンバンTODO</title>
     
     <!-- カスタムスタイル -->
     <link rel="stylesheet" href="src/custom/styles.css">
@@ -189,8 +189,8 @@
         <div class="section-panel panel-L">
             <span class="panel-number">[1-L]</span>
             <div class="app-header">
-                <h1 class="app-title">📱 アプリテンプレート v0.35</h1>
-                <p class="app-subtitle">Firebase + Google認証対応 - 汎用データ管理</p>
+                <h1 class="app-title">📋 カンバンTODO</h1>
+                <p class="app-subtitle">タスク管理をスマートに</p>
             </div>
             <!-- 認証セクション -->
             <div class="auth-section" id="authSection">
@@ -206,52 +206,43 @@
             </div>
         </div>
         
-        <!-- パネル2: データ入力（カスタマイズ可能） -->
+        <!-- パネル2: カンバンボード -->
         <div class="section-panel panel-L hidden" id="userPanel">
             <span class="panel-number">[2-L]</span>
-
-            <!-- データ入力セクション -->
-            <div class="weight-input" id="weightInput">
-                <div class="input-card section-panel panel-M" data-grid="B3">
-                    <span class="panel-number">[2.1-M]</span>
-                    <h3 style="margin-top: 0; margin-bottom: 8px;">📝 データを記録</h3>
-                    <!-- 基本入力エリア（Sパネル統合） -->
-                    <div>
-                        <input type="date" class="input-field" id="dateInput">
-                        <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
-                            <input type="number" class="input-field" id="weightValue" placeholder="値を入力" step="0.1" min="0" max="999" value="50.0" style="flex: 1;" onkeydown="handleWeightKeypress(event)">
-                            <span style="font-size: 11px; color: #666;">↑↓で調整</span>
-                        </div>
-                    </div>
-                
-                    <!-- タイミング選択パネル -->
-                    <div class="timing-panel section-panel panel-S" data-grid="B6-D6">
-                        <span class="panel-number">[2.1.1-S]</span>
-                    <div class="timing-buttons">
-                        <button type="button" class="timing-btn" onclick="selectTiming('起床後')" data-timing="起床後" style="background: #55a3ff;">🛏️ 起床後</button>
-                        <button type="button" class="timing-btn" onclick="selectTiming('トイレ前')" data-timing="トイレ前" style="background: #81ecec;">🚽 トイレ前</button>
-                        <button type="button" class="timing-btn" onclick="selectTiming('トイレ後')" data-timing="トイレ後" style="background: #74b9ff;">🚽 トイレ後</button>
-                        <button type="button" class="timing-btn" onclick="selectTiming('風呂前')" data-timing="風呂前" style="background: #fd79a8;">🛁 風呂前</button>
-                        <button type="button" class="timing-btn" onclick="selectTiming('風呂後')" data-timing="風呂後" style="background: #00b894;">🛀 風呂後</button>
-                        <button type="button" class="timing-btn" onclick="selectTiming('食事前')" data-timing="食事前" style="background: #e84393;">🍽️ 食事前</button>
-                        <button type="button" class="timing-btn" onclick="selectTiming('食事後')" data-timing="食事後" style="background: #a29bfe;">🍽️ 食事後</button>
-                    </div>
-                    <input type="text" class="input-field" id="selectedTiming" placeholder="選択されたタイミング" readonly style="margin-top: 4px; background: #ffffff; font-size: 12px; padding: 6px; text-align: center;">
-                </div>
-                
-                    <!-- メモと保存（統合） -->
-                    <div class="section-panel panel-S" data-grid="B8-C8">
-                        <span class="panel-number">[2.1.2-S]</span>
-                        <textarea class="input-field" id="memoInput" placeholder="メモ (オプション)" rows="2"></textarea>
-                        <button class="save-button" onclick="saveWeightData()" style="margin-top: 10px;">💾 保存</button>
-                    </div>
-                </div>
             
-                <div class="input-card section-panel panel-M" data-grid="B10">
-                    <span class="panel-number">[2.2-M]</span>
-                <h3>📈 記録履歴</h3>
-                <div class="data-area" id="weightHistory">
-                    データを読み込み中...<br>
+            <!-- 新規タスク追加セクション -->
+            <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                <h3 style="margin-top: 0; margin-bottom: 10px;">➕ 新しいタスク</h3>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <input type="text" id="taskTitle" placeholder="タスクタイトル" class="input-field" style="flex: 1; margin: 0;">
+                    <textarea id="taskDescription" placeholder="説明（オプション）" class="input-field" rows="1" style="flex: 1; margin: 0;"></textarea>
+                    <button onclick="addTask()" class="save-button" style="margin: 0; padding: 10px 20px;">追加</button>
+                </div>
+            </div>
+
+            <!-- カンバンボード -->
+            <div id="kanbanBoard" style="display: flex; gap: 15px; overflow-x: auto; padding: 10px 0;">
+                <!-- Todo列 -->
+                <div class="kanban-column" style="flex: 1; min-width: 300px; background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                    <h3 style="margin-top: 0; margin-bottom: 15px; color: #6c757d; text-align: center;">📋 Todo</h3>
+                    <div id="todoColumn" class="task-list" data-status="todo" style="min-height: 400px;">
+                        <!-- タスクカードがここに追加されます -->
+                    </div>
+                </div>
+                
+                <!-- Doing列 -->
+                <div class="kanban-column" style="flex: 1; min-width: 300px; background: #e7f3ff; padding: 15px; border-radius: 8px;">
+                    <h3 style="margin-top: 0; margin-bottom: 15px; color: #0066cc; text-align: center;">🔄 Doing</h3>
+                    <div id="doingColumn" class="task-list" data-status="doing" style="min-height: 400px;">
+                        <!-- タスクカードがここに追加されます -->
+                    </div>
+                </div>
+                
+                <!-- Done列 -->
+                <div class="kanban-column" style="flex: 1; min-width: 300px; background: #d4edda; padding: 15px; border-radius: 8px;">
+                    <h3 style="margin-top: 0; margin-bottom: 15px; color: #155724; text-align: center;">✅ Done</h3>
+                    <div id="doneColumn" class="task-list" data-status="done" style="min-height: 400px;">
+                        <!-- タスクカードがここに追加されます -->
                     </div>
                 </div>
             </div>
@@ -262,7 +253,7 @@
             <span class="panel-number">[3-L]</span>
             <h3>📋 アプリログ <button class="universal-copy-btn" onclick="copyLogs()" style="background: #28a745; color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 12px;">📋 ログをコピー</button></h3>
             <div class="data-area" id="logArea">
-            アプリテンプレート v0.35 起動完了...<br>
+            カンバンTODO 起動完了...<br>
             🔥 Firebase設定完了<br>
             🔐 Google認証準備完了<br>
             </div>
@@ -304,41 +295,138 @@
 
         let currentUser = null;
         let selectedTimingValue = '';
+        let draggedElement = null;
 
-        // キーボードでの値調整機能
-        window.handleWeightKeypress = (event) => {
-            const weightInput = document.getElementById('weightValue');
-            const currentValue = parseFloat(weightInput.value) || 50.0;
-            
-            if (event.key === 'ArrowUp') {
-                event.preventDefault();
-                weightInput.value = (currentValue + 0.1).toFixed(1);
-            } else if (event.key === 'ArrowDown') {
-                event.preventDefault();
-                weightInput.value = Math.max(0, currentValue - 0.1).toFixed(1);
+        // タスク追加機能
+        window.addTask = async () => {
+            if (!currentUser) {
+                log('❌ ログインが必要です');
+                return;
+            }
+
+            const title = document.getElementById('taskTitle').value.trim();
+            const description = document.getElementById('taskDescription').value.trim();
+
+            if (!title) {
+                log('❌ タスクタイトルを入力してください');
+                return;
+            }
+
+            try {
+                log('💾 タスクを保存中...');
+                
+                const taskData = {
+                    title: title,
+                    description: description || '',
+                    status: 'todo',
+                    userEmail: currentUser.email,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP,
+                    createdAt: new Date().toISOString()
+                };
+
+                const userRef = database.ref(`users/${currentUser.uid}/tasks`);
+                await userRef.push(taskData);
+                log(`✅ タスク追加完了: ${title}`);
+                
+                // 入力フィールドをクリア
+                document.getElementById('taskTitle').value = '';
+                document.getElementById('taskDescription').value = '';
+                
+                // データを再読み込み
+                loadUserTasks(currentUser.uid);
+            } catch (error) {
+                log(`❌ 保存エラー: ${error.message}`);
             }
         };
 
-        // タイミング選択機能（改良版）
-        window.selectTiming = (timing) => {
-            selectedTimingValue = timing;
-            document.getElementById('selectedTiming').value = timing;
-            
-            // すべてのボタンから選択状態を削除
-            document.querySelectorAll('.timing-btn').forEach(btn => {
-                btn.classList.remove('selected');
-                btn.style.opacity = '0.7';
-            });
-            
-            // 選択されたボタンに選択状態を追加
-            const selectedBtn = document.querySelector(`[data-timing="${timing}"]`);
-            if (selectedBtn) {
-                selectedBtn.classList.add('selected');
-                selectedBtn.style.opacity = '1';
+        // タスクのステータス更新
+        window.updateTaskStatus = async (taskId, newStatus) => {
+            if (!currentUser) {
+                log('❌ ログインが必要です');
+                return;
             }
             
-            log(`⏰ 測定タイミング選択: ${timing}`);
+            try {
+                log(`🔄 タスクステータス更新中: ${taskId} -> ${newStatus}`);
+                const taskRef = database.ref(`users/${currentUser.uid}/tasks/${taskId}`);
+                await taskRef.update({ status: newStatus });
+                log(`✅ ステータス更新完了`);
+            } catch (error) {
+                log(`❌ 更新エラー: ${error.message}`);
+            }
         };
+
+        // タスク削除
+        window.deleteTask = async (taskId) => {
+            if (!currentUser) {
+                log('❌ ログインが必要です');
+                return;
+            }
+            
+            if (!confirm('このタスクを削除しますか？')) {
+                return;
+            }
+            
+            try {
+                log(`🗑️ タスク削除中: ${taskId}`);
+                const taskRef = database.ref(`users/${currentUser.uid}/tasks/${taskId}`);
+                await taskRef.remove();
+                log(`✅ 削除完了`);
+            } catch (error) {
+                log(`❌ 削除エラー: ${error.message}`);
+            }
+        };
+
+        // ドラッグ&ドロップのイベントハンドラ
+        function handleDragStart(e) {
+            draggedElement = e.target;
+            e.target.style.opacity = '0.5';
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', e.target.innerHTML);
+        }
+
+        function handleDragEnd(e) {
+            e.target.style.opacity = '';
+            draggedElement = null;
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+
+        function handleDragEnter(e) {
+            if (e.target.classList.contains('task-list')) {
+                e.target.style.background = 'rgba(0,123,255,0.1)';
+            }
+        }
+
+        function handleDragLeave(e) {
+            if (e.target.classList.contains('task-list')) {
+                e.target.style.background = '';
+            }
+        }
+
+        function handleDrop(e) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            
+            if (e.target.classList.contains('task-list')) {
+                e.target.style.background = '';
+                const newStatus = e.target.dataset.status;
+                const taskId = draggedElement.dataset.taskId;
+                
+                if (taskId && newStatus) {
+                    updateTaskStatus(taskId, newStatus);
+                }
+            }
+            
+            return false;
+        }
 
         // 認証状態の監視（改良版）
         auth.onAuthStateChanged((user) => {
@@ -347,7 +435,7 @@
                 log(`✅ 認証状態確認: ${user.displayName} でログイン中`);
                 log(`📧 メール: ${user.email}`);
                 showUserInterface(user);
-                loadUserWeightData(user.uid);
+                loadUserTasks(user.uid);
             } else {
                 log('🔒 認証状態: 未ログイン');
                 showLoginInterface();
@@ -495,113 +583,76 @@
             }
         };
 
-        // データ保存
-        window.saveWeightData = async () => {
-            if (!currentUser) {
-                log('❌ ログインが必要です');
-                return;
-            }
-
-            const date = document.getElementById('dateInput').value;
-            const value = document.getElementById('weightValue').value;
-            const memo = document.getElementById('memoInput').value;
-
-            if (!date || !value) {
-                log('❌ 日付と値を入力してください');
-                return;
-            }
-
-            try {
-                log('💾 データを保存中...');
-                
-                const now = new Date();
-                const timeString = now.toLocaleTimeString('ja-JP', { 
-                    hour12: false, 
-                    hour: '2-digit', 
-                    minute: '2-digit' 
-                });
-                
-                const weightData = {
-                    date: date,
-                    time: timeString,
-                    value: parseFloat(value),
-                    timing: selectedTimingValue || '',
-                    memo: memo || '',
-                    userEmail: currentUser.email,
-                    timestamp: firebase.database.ServerValue.TIMESTAMP,
-                    createdAt: now.toISOString()
-                };
-
-                const userRef = database.ref(`users/${currentUser.uid}/weights`);
-                await userRef.push(weightData);
-                log(`✅ 保存完了: ${date} ${timeString} - ${value} ${selectedTimingValue ? `(${selectedTimingValue})` : ''}`);
-                
-                // 入力フィールドをクリア（値は50.0に戻す）
-                document.getElementById('weightValue').value = '50.0';
-                document.getElementById('memoInput').value = '';
-                document.getElementById('selectedTiming').value = '';
-                selectedTimingValue = '';
-                
-                // ボタンのスタイルをリセット
-                document.querySelectorAll('.timing-btn').forEach(btn => {
-                    btn.style.opacity = '0.7';
-                    btn.classList.remove('selected');
-                });
-                
-                // データを再読み込み
-                loadUserWeightData(currentUser.uid);
-            } catch (error) {
-                log(`❌ 保存エラー: ${error.message}`);
-            }
-        };
-
-        // データ削除
-        window.deleteWeightEntry = async (entryId) => {
-            if (!currentUser) {
-                log('❌ ログインが必要です');
-                return;
-            }
-            
-            if (!confirm('この記録を削除しますか？')) {
-                return;
-            }
-            
-            try {
-                log(`🗑️ データ削除中: ${entryId}`);
-                const entryRef = database.ref(`users/${currentUser.uid}/weights/${entryId}`);
-                await entryRef.remove();
-                log(`✅ 削除完了: ${entryId}`);
-            } catch (error) {
-                log(`❌ 削除エラー: ${error.message}`);
-            }
-        };
-
-        // ユーザーのデータを読み込み
-        function loadUserWeightData(userId) {
-            const userRef = database.ref(`users/${userId}/weights`);
+        // ユーザーのタスクを読み込み
+        function loadUserTasks(userId) {
+            const userRef = database.ref(`users/${userId}/tasks`);
             userRef.on('value', (snapshot) => {
                 const data = snapshot.val();
-                const historyDiv = document.getElementById('weightHistory');
+                const todoColumn = document.getElementById('todoColumn');
+                const doingColumn = document.getElementById('doingColumn');
+                const doneColumn = document.getElementById('doneColumn');
+                
+                // 列をクリア
+                todoColumn.innerHTML = '';
+                doingColumn.innerHTML = '';
+                doneColumn.innerHTML = '';
                 
                 if (data) {
-                    const entries = Object.entries(data)
-                        .map(([key, value]) => ({ id: key, ...value }))
-                        .sort((a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date));
+                    const tasks = Object.entries(data)
+                        .map(([key, value]) => ({ id: key, ...value }));
                     
-                    historyDiv.innerHTML = entries.map(entry => {
-                        let displayText = `${entry.date}`;
-                        if (entry.time) displayText += ` ${entry.time}`;
-                        displayText += `: ${entry.value || entry.weight}`;
-                        if (entry.timing) displayText += ` (${entry.timing})`;
-                        if (entry.memo) displayText += ` - ${entry.memo}`;
-                        return `<div style="display: flex; justify-content: space-between; align-items: center; padding: 2px 0; border-bottom: 1px solid #eee;"><span>${displayText}</span><button onclick="deleteWeightEntry('${entry.id}')" style="background: #dc3545; color: white; border: none; padding: 2px 6px; border-radius: 3px; cursor: pointer; font-size: 10px;">🗑️</button></div>`;
-                    }).join('');
+                    tasks.forEach(task => {
+                        const taskCard = document.createElement('div');
+                        taskCard.className = 'task-card';
+                        taskCard.dataset.taskId = task.id;
+                        taskCard.draggable = true;
+                        taskCard.style.cssText = `
+                            background: white;
+                            border: 1px solid #dee2e6;
+                            border-radius: 8px;
+                            padding: 12px;
+                            margin-bottom: 10px;
+                            cursor: move;
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                            transition: all 0.3s;
+                        `;
+                        
+                        taskCard.innerHTML = `
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                                <div style="flex: 1;">
+                                    <h4 style="margin: 0 0 5px 0; color: #333;">${task.title}</h4>
+                                    ${task.description ? `<p style="margin: 0; color: #666; font-size: 14px;">${task.description}</p>` : ''}
+                                </div>
+                                <button onclick="deleteTask('${task.id}')" style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 12px;">×</button>
+                            </div>
+                        `;
+                        
+                        // ドラッグイベントを設定
+                        taskCard.addEventListener('dragstart', handleDragStart, false);
+                        taskCard.addEventListener('dragend', handleDragEnd, false);
+                        
+                        // ステータスに応じて列に追加
+                        if (task.status === 'todo') {
+                            todoColumn.appendChild(taskCard);
+                        } else if (task.status === 'doing') {
+                            doingColumn.appendChild(taskCard);
+                        } else if (task.status === 'done') {
+                            doneColumn.appendChild(taskCard);
+                        }
+                    });
                     
-                    log(`📈 履歴読み込み完了: ${entries.length}件`);
+                    log(`📋 タスク読み込み完了: ${tasks.length}件`);
                 } else {
-                    historyDiv.innerHTML = 'まだデータがありません';
-                    log('📈 履歴: データなし');
+                    log('📋 タスク: データなし');
                 }
+                
+                // ドロップイベントを列に設定
+                [todoColumn, doingColumn, doneColumn].forEach(column => {
+                    column.addEventListener('dragover', handleDragOver, false);
+                    column.addEventListener('drop', handleDrop, false);
+                    column.addEventListener('dragenter', handleDragEnter, false);
+                    column.addEventListener('dragleave', handleDragLeave, false);
+                });
             });
         }
 
@@ -611,17 +662,6 @@
             document.getElementById('userInfo').classList.remove('hidden');
             document.getElementById('userPanel').classList.remove('hidden');
             document.getElementById('userName').textContent = user.displayName;
-            
-            // 今日の日付とデフォルト値を設定
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('dateInput').value = today;
-            document.getElementById('weightValue').value = '50.0';
-            
-            // タイミングボタンの初期状態設定
-            document.querySelectorAll('.timing-btn').forEach(btn => {
-                btn.style.opacity = '0.7';
-                btn.classList.remove('selected');
-            });
         }
 
         function showLoginInterface() {
@@ -781,7 +821,7 @@
             if (user) {
                 log('✅ ユーザー画面を表示します');
                 showUserInterface(user);
-                loadUserWeightData(user.uid);
+                loadUserTasks(user.uid);
             } else {
                 log('❌ ログイン画面を表示します');
                 showLoginInterface();
@@ -857,22 +897,31 @@
             log('🏗️ === データベース構造確認 開始 ===');
             
             try {
-                // 現在のユーザーのweightsデータ構造を確認
-                const userRef = database.ref(`users/${currentUser.uid}/weights`);
+                // 現在のユーザーのtasksデータ構造を確認
+                const userRef = database.ref(`users/${currentUser.uid}/tasks`);
                 const snapshot = await userRef.once('value');
                 const data = snapshot.val();
                 
                 if (data) {
                     const entries = Object.keys(data);
-                    log(`📊 現在のユーザー(${currentUser.email})のデータ:`);
-                    log(`- 記録数: ${entries.length}件`);
-                    log(`- 最新記録ID: ${entries[entries.length - 1]}`);
+                    log(`📊 現在のユーザー(${currentUser.email})のタスク:`);
+                    log(`- タスク数: ${entries.length}件`);
+                    log(`- 最新タスクID: ${entries[entries.length - 1]}`);
                     
                     // サンプルデータ構造を表示
                     const sampleEntry = data[entries[0]];
                     log(`- データ構造: ${JSON.stringify(sampleEntry, null, 2)}`);
+                    
+                    // ステータス別カウント
+                    let todoCount = 0, doingCount = 0, doneCount = 0;
+                    Object.values(data).forEach(task => {
+                        if (task.status === 'todo') todoCount++;
+                        else if (task.status === 'doing') doingCount++;
+                        else if (task.status === 'done') doneCount++;
+                    });
+                    log(`- Todo: ${todoCount}件, Doing: ${doingCount}件, Done: ${doneCount}件`);
                 } else {
-                    log('📊 現在のユーザーにはデータがありません');
+                    log('📊 現在のユーザーにはタスクがありません');
                 }
                 
                 // ルートレベルの構造確認（管理者権限が必要）
@@ -886,13 +935,13 @@
                         log(`👥 全体統計:`);
                         log(`- 登録ユーザー数: ${userCount}人`);
                         
-                        let totalWeights = 0;
+                        let totalTasks = 0;
                         Object.values(allUsers).forEach(user => {
-                            if (user.weights) {
-                                totalWeights += Object.keys(user.weights).length;
+                            if (user.tasks) {
+                                totalTasks += Object.keys(user.tasks).length;
                             }
                         });
-                        log(`- 全体の記録数: ${totalWeights}件`);
+                        log(`- 全体のタスク数: ${totalTasks}件`);
                     }
                 } catch (error) {
                     log(`⚠️ 全体統計の取得に制限があります: ${error.message}`);
@@ -1199,7 +1248,7 @@ ${document.getElementById('logArea').innerText}`;
             log('📐 === テスト終了 ===');
         };
         
-        log('🚀 アプリテンプレート v0.33 起動完了');
+        log('🚀 カンバンTODO 起動完了');
         log('🔐 認証システム準備完了');
         
         // プロトコルチェック（自動診断）
