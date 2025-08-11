@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>カンバンTODO v0.2</title>
+    <title>カンバンTODO v0.21</title>
     
     <!-- カスタムスタイル -->
     <link rel="stylesheet" href="src/custom/styles.css">
@@ -29,6 +29,10 @@
             margin: 15px 0;
             background: white;
             box-shadow: 0 2px 5px rgba(0,123,255,0.2);
+        }
+        body.panel-mode .panel-L {
+            border: 3px solid #28a745;
+            box-shadow: 0 2px 5px rgba(40,167,69,0.3);
         }
         body.panel-mode .panel-number {
             display: block;
@@ -71,7 +75,7 @@
         .mode-toggle {
             position: fixed;
             top: 10px;
-            right: 10px;
+            right: 140px;
             background: #007bff;
             color: white;
             border: none;
@@ -86,7 +90,7 @@
         }
         .grid-toggle {
             position: fixed;
-            top: 50px;
+            top: 10px;
             right: 10px;
             background: #28a745;
             color: white;
@@ -240,7 +244,7 @@
         <div class="section-panel panel-L" style="padding: 10px !important;">
             <span class="panel-number">[1]</span>
             <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-                <h1 style="margin: 0; font-size: 20px;">📋 カンバンTODO v0.2</h1>
+                <h1 style="margin: 0; font-size: 20px;">📋 カンバンTODO v0.21</h1>
                 <!-- 認証セクション -->
                 <div id="authSection" style="display: flex; gap: 10px; align-items: center;">
                     <button class="auth-button" onclick="handleGoogleLogin()" style="padding: 6px 12px; margin: 0;">Googleログイン</button>
@@ -307,7 +311,7 @@
                 <!-- Todo列 -->
                 <div class="kanban-column" style="flex: 1; min-width: 300px; background: #f8f9fa; padding: 15px; border-radius: 8px;">
                     <h3 style="margin-top: 0; margin-bottom: 15px; color: #6c757d; text-align: center;">📋 Todo</h3>
-                    <div id="todoColumn" class="task-list" data-status="todo" style="min-height: 400px;">
+                    <div id="todoColumn" class="task-list" data-status="todo" style="min-height: 300px;">
                         <!-- タスクカードがここに追加されます -->
                     </div>
                 </div>
@@ -315,7 +319,7 @@
                 <!-- Doing列 -->
                 <div class="kanban-column" style="flex: 1; min-width: 300px; background: #e7f3ff; padding: 15px; border-radius: 8px;">
                     <h3 style="margin-top: 0; margin-bottom: 15px; color: #0066cc; text-align: center;">🔄 Doing</h3>
-                    <div id="doingColumn" class="task-list" data-status="doing" style="min-height: 400px;">
+                    <div id="doingColumn" class="task-list" data-status="doing" style="min-height: 300px;">
                         <!-- タスクカードがここに追加されます -->
                     </div>
                 </div>
@@ -323,7 +327,7 @@
                 <!-- Done列 -->
                 <div class="kanban-column" style="flex: 1; min-width: 300px; background: #d4edda; padding: 15px; border-radius: 8px;">
                     <h3 style="margin-top: 0; margin-bottom: 15px; color: #155724; text-align: center;">✅ Done</h3>
-                    <div id="doneColumn" class="task-list" data-status="done" style="min-height: 400px;">
+                    <div id="doneColumn" class="task-list" data-status="done" style="min-height: 300px;">
                         <!-- タスクカードがここに追加されます -->
                     </div>
                 </div>
@@ -335,7 +339,7 @@
             <span class="panel-number">[3]</span>
             <h3>📋 アプリログ <button class="universal-copy-btn" onclick="copyLogs()" style="background: #28a745; color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 12px;">📋 ログをコピー</button></h3>
             <div class="data-area" id="logArea">
-            カンバンTODO v0.2 起動完了...<br>
+            カンバンTODO v0.21 起動完了...<br>
             🔥 Firebase設定完了<br>
             🔐 Google認証準備完了<br>
             </div>
@@ -501,11 +505,13 @@
 
         // ドラッグ&ドロップのイベントハンドラ
         function handleDragStart(e) {
-            e.preventDefault = function() { return false; };
             draggedElement = e.target;
             e.target.style.opacity = '0.5';
             e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/plain', 'dummy');
+            // データを設定しないことでブラウザのリンク動作を防ぐ
+            try {
+                e.dataTransfer.setData('text/html', '');
+            } catch(e) {}
         }
 
         function handleDragEnd(e) {
@@ -742,6 +748,12 @@
                         taskCard.dataset.taskId = task.id;
                         taskCard.dataset.priorityLevel = task.priorityLevel || 'C';
                         taskCard.draggable = true;
+                        taskCard.ondragstart = (e) => {
+                            // ドラッグ開始時にリンク動作を完全にブロック
+                            e.dataTransfer.effectAllowed = 'move';
+                            e.dataTransfer.setDragImage(taskCard, 0, 0);
+                            return true;
+                        };
                         taskCard.style.cssText = `
                             background: white;
                             border: 1px solid #dee2e6;
@@ -773,6 +785,14 @@
                         
                         // クリックイベントを無効化（リンク動作を防ぐ）
                         taskCard.addEventListener('click', (e) => {
+                            if (e.target.tagName !== 'BUTTON') {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }
+                        });
+                        
+                        // マウスダウンイベントでリンク動作をブロック
+                        taskCard.addEventListener('mousedown', (e) => {
                             if (e.target.tagName !== 'BUTTON') {
                                 e.preventDefault();
                             }
@@ -1397,7 +1417,7 @@ ${document.getElementById('logArea').innerText}`;
             log('📐 === テスト終了 ===');
         };
         
-        log('🚀 カンバンTODO v0.2 起動完了');
+        log('🚀 カンバンTODO v0.21 起動完了');
         log('🔐 認証システム準備完了');
         
         // プロトコルチェック（自動診断）
