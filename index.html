@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>カンバンTODO v0.22</title>
+    <title>カンバンTODO v0.24</title>
     
     <!-- カスタムスタイル -->
     <link rel="stylesheet" href="src/custom/styles.css">
@@ -244,7 +244,7 @@
         <div class="section-panel panel-L" style="padding: 10px !important;">
             <span class="panel-number">[1]</span>
             <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-                <h1 style="margin: 0; font-size: 20px;">📋 カンバンTODO v0.22</h1>
+                <h1 style="margin: 0; font-size: 16px;">📋 カンバンTODO v0.24</h1>
                 <!-- 認証セクション -->
                 <div id="authSection" style="display: flex; gap: 10px; align-items: center; margin-left: auto;">
                     <button class="auth-button" onclick="handleGoogleLogin()" style="padding: 6px 12px; margin: 0;">Googleログイン</button>
@@ -263,7 +263,7 @@
             
             <!-- 新規タスク追加セクション -->
             <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                <h3 style="margin-top: 0; margin-bottom: 10px;">➕ 新しいタスク</h3>
+                <h3 style="margin-top: 0; margin-bottom: 10px; font-size: 14px;">➕ 新しいタスク</h3>
                 <div style="display: flex; flex-direction: column; gap: 10px;">
                     <input type="text" id="taskTitle" placeholder="タスクタイトル（例：週次会議の準備）" class="input-field" style="margin: 0; width: 100%;">
                     <textarea id="taskDescription" placeholder="説明（オプション）" class="input-field" rows="2" style="margin: 0; width: 100%; resize: vertical;"></textarea>
@@ -339,7 +339,7 @@
             <span class="panel-number">[3]</span>
             <h3>📋 アプリログ <button class="universal-copy-btn" onclick="copyLogs()" style="background: #28a745; color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 12px;">📋 ログをコピー</button></h3>
             <div class="data-area" id="logArea">
-            カンバンTODO v0.22 起動完了...<br>
+            カンバンTODO v0.24 起動完了...<br>
             🔥 Firebase設定完了<br>
             🔐 Google認証準備完了<br>
             </div>
@@ -505,18 +505,29 @@
 
         // ドラッグ&ドロップのイベントハンドラ
         function handleDragStart(e) {
+            console.log('Drag started:', e.target);
             draggedElement = e.target;
             e.target.style.opacity = '0.5';
+            e.target.style.cursor = 'grabbing';
             e.dataTransfer.effectAllowed = 'move';
             // データを設定しないことでブラウザのリンク動作を防ぐ
             try {
                 e.dataTransfer.setData('text/html', '');
-            } catch(e) {}
+            } catch(err) {
+                console.error('setData error:', err);
+            }
+            log('🎯 タスクをドラッグ開始');
         }
 
         function handleDragEnd(e) {
+            console.log('Drag ended');
             e.target.style.opacity = '';
+            e.target.style.cursor = 'grab';
             draggedElement = null;
+            // すべての列の背景をリセット
+            document.querySelectorAll('.task-list').forEach(list => {
+                list.style.background = '';
+            });
         }
 
         function handleDragOver(e) {
@@ -754,7 +765,9 @@
                             border-radius: 8px;
                             padding: 12px;
                             margin-bottom: 10px;
-                            cursor: move;
+                            cursor: grab;
+                            transition: transform 0.2s, box-shadow 0.2s;
+                            user-select: none;
                             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
                             transition: all 0.3s;
                         `;
@@ -776,6 +789,35 @@
                         // ドラッグイベントを設定
                         taskCard.addEventListener('dragstart', handleDragStart, false);
                         taskCard.addEventListener('dragend', handleDragEnd, false);
+                        
+                        // マウスオーバーで視覚的フィードバック
+                        taskCard.addEventListener('mouseenter', (e) => {
+                            if (!draggedElement) {
+                                e.currentTarget.style.transform = 'scale(1.02)';
+                                e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)';
+                            }
+                        });
+                        
+                        taskCard.addEventListener('mouseleave', (e) => {
+                            if (!draggedElement) {
+                                e.currentTarget.style.transform = '';
+                                e.currentTarget.style.boxShadow = '';
+                            }
+                        });
+                        
+                        // マウスダウンで掴んでいる感覚を追加
+                        taskCard.addEventListener('mousedown', (e) => {
+                            if (e.target.tagName !== 'BUTTON') {
+                                e.currentTarget.style.cursor = 'grabbing';
+                                log('🖱️ タスクをクリック');
+                            }
+                        });
+                        
+                        taskCard.addEventListener('mouseup', (e) => {
+                            if (e.target.tagName !== 'BUTTON') {
+                                e.currentTarget.style.cursor = 'grab';
+                            }
+                        });
                         
                         // クリックイベントを無効化（リンク動作を防ぐ）
                         taskCard.addEventListener('click', (e) => {
@@ -1411,7 +1453,7 @@ ${document.getElementById('logArea').innerText}`;
             log('📐 === テスト終了 ===');
         };
         
-        log('🚀 カンバンTODO v0.22 起動完了');
+        log('🚀 カンバンTODO v0.24 起動完了');
         log('🔐 認証システム準備完了');
         
         // プロトコルチェック（自動診断）
