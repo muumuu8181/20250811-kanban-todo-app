@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>カンバンTODO v0.1</title>
+    <title>カンバンTODO v0.2</title>
     
     <!-- カスタムスタイル -->
     <link rel="stylesheet" href="src/custom/styles.css">
@@ -240,7 +240,7 @@
         <div class="section-panel panel-L" style="padding: 10px !important;">
             <span class="panel-number">[1]</span>
             <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-                <h1 style="margin: 0; font-size: 20px;">📋 カンバンTODO v0.1</h1>
+                <h1 style="margin: 0; font-size: 20px;">📋 カンバンTODO v0.2</h1>
                 <!-- 認証セクション -->
                 <div id="authSection" style="display: flex; gap: 10px; align-items: center;">
                     <button class="auth-button" onclick="handleGoogleLogin()" style="padding: 6px 12px; margin: 0;">Googleログイン</button>
@@ -293,12 +293,12 @@
             <!-- フィルターセクション -->
             <div style="margin-bottom: 15px; padding: 10px; background: #e9ecef; border-radius: 8px;">
                 <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                    <label style="font-weight: bold;">フィルター:</label>
-                    <button onclick="filterByPriority('all')" class="filter-btn" data-filter="all" style="background: #007bff; color: white; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer;">ALL</button>
-                    <button onclick="filterByPriority('S')" class="filter-btn" data-filter="S" style="background: #dc3545; color: white; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer;">S</button>
-                    <button onclick="filterByPriority('A')" class="filter-btn" data-filter="A" style="background: #fd7e14; color: white; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer;">A</button>
-                    <button onclick="filterByPriority('B')" class="filter-btn" data-filter="B" style="background: #ffc107; color: #212529; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer;">B</button>
-                    <button onclick="filterByPriority('C')" class="filter-btn" data-filter="C" style="background: #28a745; color: white; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer;">C</button>
+                    <label style="font-weight: bold; font-size: 12px;">フィルター:</label>
+                    <button onclick="filterByPriority('all')" class="filter-btn" data-filter="all" style="background: #007bff; color: white; border: none; padding: 5px 13px; border-radius: 5px; cursor: pointer; font-size: 12px;">ALL</button>
+                    <button onclick="filterByPriority('S')" class="filter-btn" data-filter="S" style="background: #dc3545; color: white; border: none; padding: 5px 13px; border-radius: 5px; cursor: pointer; font-size: 12px;">S</button>
+                    <button onclick="filterByPriority('A')" class="filter-btn" data-filter="A" style="background: #fd7e14; color: white; border: none; padding: 5px 13px; border-radius: 5px; cursor: pointer; font-size: 12px;">A</button>
+                    <button onclick="filterByPriority('B')" class="filter-btn" data-filter="B" style="background: #ffc107; color: #212529; border: none; padding: 5px 13px; border-radius: 5px; cursor: pointer; font-size: 12px;">B</button>
+                    <button onclick="filterByPriority('C')" class="filter-btn" data-filter="C" style="background: #28a745; color: white; border: none; padding: 5px 13px; border-radius: 5px; cursor: pointer; font-size: 12px;">C</button>
                 </div>
             </div>
 
@@ -335,7 +335,7 @@
             <span class="panel-number">[3]</span>
             <h3>📋 アプリログ <button class="universal-copy-btn" onclick="copyLogs()" style="background: #28a745; color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 12px;">📋 ログをコピー</button></h3>
             <div class="data-area" id="logArea">
-            カンバンTODO v0.1 起動完了...<br>
+            カンバンTODO v0.2 起動完了...<br>
             🔥 Firebase設定完了<br>
             🔐 Google認証準備完了<br>
             </div>
@@ -501,10 +501,11 @@
 
         // ドラッグ&ドロップのイベントハンドラ
         function handleDragStart(e) {
+            e.preventDefault = function() { return false; };
             draggedElement = e.target;
             e.target.style.opacity = '0.5';
             e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/html', e.target.innerHTML);
+            e.dataTransfer.setData('text/plain', 'dummy');
         }
 
         function handleDragEnd(e) {
@@ -756,21 +757,26 @@
                         const priorityText = `${task.priorityLevel || 'C'}${task.priorityNumber || ''}`;
                         
                         taskCard.innerHTML = `
-                            <div style="display: flex; justify-content: space-between; align-items: start;">
-                                <div style="flex: 1;">
-                                    <div style="margin-bottom: 5px;">
-                                        <span class="${priorityBadgeClass}">${priorityText}</span>
-                                    </div>
-                                    <h4 style="margin: 0 0 5px 0; color: #333;">${task.title}</h4>
-                                    ${task.description ? `<p style="margin: 0; color: #666; font-size: 14px;">${task.description}</p>` : ''}
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div style="flex: 1; display: flex; align-items: center; gap: 8px;">
+                                    <span class="${priorityBadgeClass}">${priorityText}</span>
+                                    <span style="color: #333; font-weight: 500;">${task.title}</span>
                                 </div>
                                 <button onclick="deleteTask('${task.id}')" style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 12px;">×</button>
                             </div>
+                            ${task.description ? `<div style="margin-top: 4px; color: #666; font-size: 12px; padding-left: 8px;">${task.description}</div>` : ''}
                         `;
                         
                         // ドラッグイベントを設定
                         taskCard.addEventListener('dragstart', handleDragStart, false);
                         taskCard.addEventListener('dragend', handleDragEnd, false);
+                        
+                        // クリックイベントを無効化（リンク動作を防ぐ）
+                        taskCard.addEventListener('click', (e) => {
+                            if (e.target.tagName !== 'BUTTON') {
+                                e.preventDefault();
+                            }
+                        });
                         
                         // ステータスに応じて列に追加
                         if (task.status === 'todo') {
@@ -1391,7 +1397,7 @@ ${document.getElementById('logArea').innerText}`;
             log('📐 === テスト終了 ===');
         };
         
-        log('🚀 カンバンTODO v0.1 起動完了');
+        log('🚀 カンバンTODO v0.2 起動完了');
         log('🔐 認証システム準備完了');
         
         // プロトコルチェック（自動診断）
