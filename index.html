@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>カンバンTODO v0.24</title>
+    <title>カンバンTODO v0.25</title>
     
     <!-- カスタムスタイル -->
     <link rel="stylesheet" href="src/custom/styles.css">
@@ -244,7 +244,7 @@
         <div class="section-panel panel-L" style="padding: 10px !important;">
             <span class="panel-number">[1]</span>
             <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-                <h1 style="margin: 0; font-size: 16px;">📋 カンバンTODO v0.24</h1>
+                <h1 style="margin: 0; font-size: 16px;">📋 カンバンTODO v0.25</h1>
                 <!-- 認証セクション -->
                 <div id="authSection" style="display: flex; gap: 10px; align-items: center; margin-left: auto;">
                     <button class="auth-button" onclick="handleGoogleLogin()" style="padding: 6px 12px; margin: 0;">Googleログイン</button>
@@ -339,7 +339,7 @@
             <span class="panel-number">[3]</span>
             <h3>📋 アプリログ <button class="universal-copy-btn" onclick="copyLogs()" style="background: #28a745; color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; font-size: 12px;">📋 ログをコピー</button></h3>
             <div class="data-area" id="logArea">
-            カンバンTODO v0.24 起動完了...<br>
+            カンバンTODO v0.25 起動完了...<br>
             🔥 Firebase設定完了<br>
             🔐 Google認証準備完了<br>
             </div>
@@ -506,6 +506,10 @@
         // ドラッグ&ドロップのイベントハンドラ
         function handleDragStart(e) {
             console.log('Drag started:', e.target);
+            const taskId = e.target.dataset.taskId;
+            const taskTitle = e.target.querySelector('.task-content')?.textContent || 'Unknown';
+            log(`🎯 ドラッグ開始: ${taskTitle} (ID: ${taskId})`);
+            
             draggedElement = e.target;
             e.target.style.opacity = '0.5';
             e.target.style.cursor = 'grabbing';
@@ -515,12 +519,15 @@
                 e.dataTransfer.setData('text/html', '');
             } catch(err) {
                 console.error('setData error:', err);
+                log(`❌ ドラッグエラー: ${err.message}`);
             }
-            log('🎯 タスクをドラッグ開始');
         }
 
         function handleDragEnd(e) {
             console.log('Drag ended');
+            const taskTitle = e.target.querySelector('.task-content')?.textContent || 'Unknown';
+            log(`🏁 ドラッグ終了: ${taskTitle}`);
+            
             e.target.style.opacity = '';
             e.target.style.cursor = 'grab';
             draggedElement = null;
@@ -535,18 +542,27 @@
                 e.preventDefault();
             }
             e.dataTransfer.dropEffect = 'move';
+            
+            // ログは頻繁すぎるのでコメントアウト
+            // const status = e.currentTarget.dataset.status;
+            // log(`➡️ ドラッグオーバー: ${status}列`);
+            
             return false;
         }
 
         function handleDragEnter(e) {
             if (e.target.classList.contains('task-list')) {
                 e.target.style.background = 'rgba(0,123,255,0.1)';
+                const status = e.target.dataset.status;
+                log(`📍 列に入った: ${status}`);
             }
         }
 
         function handleDragLeave(e) {
             if (e.target.classList.contains('task-list')) {
                 e.target.style.background = '';
+                const status = e.target.dataset.status;
+                log(`👋 列から出た: ${status}`);
             }
         }
 
@@ -809,15 +825,25 @@
                         taskCard.addEventListener('mousedown', (e) => {
                             if (e.target.tagName !== 'BUTTON') {
                                 e.currentTarget.style.cursor = 'grabbing';
-                                log('🖱️ タスクをクリック');
+                                const taskTitle = e.currentTarget.querySelector('.task-content')?.textContent || 'Unknown';
+                                log(`🖱️ マウスダウン: ${taskTitle}`);
+                                log(`  - draggable: ${e.currentTarget.draggable}`);
+                                log(`  - タスクID: ${e.currentTarget.dataset.taskId}`);
                             }
                         });
                         
                         taskCard.addEventListener('mouseup', (e) => {
                             if (e.target.tagName !== 'BUTTON') {
                                 e.currentTarget.style.cursor = 'grab';
+                                const taskTitle = e.currentTarget.querySelector('.task-content')?.textContent || 'Unknown';
+                                log(`🖱️ マウスアップ: ${taskTitle}`);
                             }
                         });
+                        
+                        // ドラッグ可能かチェック
+                        if (!taskCard.draggable) {
+                            log(`⚠️ タスクカードがdraggableではない: ${task.title}`);
+                        }
                         
                         // クリックイベントを無効化（リンク動作を防ぐ）
                         taskCard.addEventListener('click', (e) => {
@@ -845,6 +871,15 @@
                     });
                     
                     log(`📋 タスク読み込み完了: ${tasks.length}件`);
+                    
+                    // ドラッグ機能の診断
+                    const allCards = document.querySelectorAll('.task-card');
+                    log(`🔍 ドラッグ診断: ${allCards.length}個のタスクカード`);
+                    allCards.forEach((card, index) => {
+                        if (!card.draggable) {
+                            log(`  ❌ カード${index + 1}: draggable=false`);
+                        }
+                    });
                 } else {
                     log('📋 タスク: データなし');
                 }
@@ -1453,7 +1488,7 @@ ${document.getElementById('logArea').innerText}`;
             log('📐 === テスト終了 ===');
         };
         
-        log('🚀 カンバンTODO v0.24 起動完了');
+        log('🚀 カンバンTODO v0.25 起動完了');
         log('🔐 認証システム準備完了');
         
         // プロトコルチェック（自動診断）
